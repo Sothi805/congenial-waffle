@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
-    <title>Electron App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:3000"
+/>
+
+  <title>Electron Server Control</title>
 </head>
 <body>
-    <h1>User List</h1>
-    <ul id="user-list"></ul>
-    <script src="../main/renderer.js"></script>
+  <h1>Electron + Express + MySQL</h1>
+  <button id="start-server">Start Server</button>
+  <button id="stop-server">Stop Server</button>
+  <script src="renderer.js"></script>
 </body>
 </html>

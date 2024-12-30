@@ -1,11 +1,9 @@
-async function fetchData() {
-    try {
-        const response = await fetch('http://localhost:5000/api/users');
-        const data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
+const { ipcRenderer } = require('electron');
 
-document.addEventListener('DOMContentLoaded', fetchData);
+document.getElementById('start-server').addEventListener('click', () => {
+  ipcRenderer.send('start-server');
+});
+
+document.getElementById('stop-server').addEventListener('click', () => {
+  ipcRenderer.send('stop-server');
+});

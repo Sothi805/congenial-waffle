@@ -1,45 +1,50 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { fork } = require('child_process');
 const path = require('path');
 
 let mainWindow;
+let serverProcess;
 
-function createMainWindow() {
-    // Create the browser window
+function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'), // Optional if you use a preload script
-            contextIsolation: true,
-            nodeIntegration: false,
-        },
+      width: 800,
+      height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, "preload.js"), // Update if a preload script is used
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
     });
+  
+    // Load the `index.html` file from the `public` directory
+    mainWindow.loadFile(path.join(__dirname, "../public/index.html"));
 
-    // Load the HTML file or a URL
-    mainWindow.loadFile(path.join(__dirname, '../public/index.html'));
+  ipcMain.on('start-server', () => {
+    if (!serverProcess) {
+      serverProcess = fork(path.join(__dirname, 'server.js'));
+      console.log('Server started');
+    }
+  });
 
-    // Uncomment to open Developer Tools (for debugging)
-    // mainWindow.webContents.openDevTools();
-
-    // Handle the window being closed
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
+  ipcMain.on('stop-server', () => {
+    if (serverProcess) {
+      serverProcess.kill();
+      serverProcess = null;
+      console.log('Server stopped');
+    }
+  });
 }
 
-// Wait until the app is ready
-app.whenReady().then(createMainWindow);
+app.on('ready', createWindow);
 
-// Quit the app when all windows are closed (except on macOS)
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-// Recreate a window if the app is reactivated (macOS specific behavior)
 app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createMainWindow();
-    }
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });

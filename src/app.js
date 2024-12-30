@@ -1,13 +1,21 @@
 const express = require('express');
-const cors = require('cors');
+const db = require('./db'); // Ensure this path is correct based on your project structure
+
 const app = express();
-const userRoutes = require('./routes/userRoute'); // Import the routes
+const PORT = 3000;
 
-app.use(cors());
-app.use(express.json());
+// Example API endpoint
+app.get('/data', (req, res) => {
+  db.query('SELECT * FROM users', (err, results) => {
+    if (err) {
+      console.error('Database query error:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results);
+  });
+});
 
-// Register routes
-app.use('/api/users', userRoutes);
-
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
